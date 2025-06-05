@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City General Hospital - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        @media (min-width: 1024px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        @media print {
+            /* Default Hide for printing-active */
+            body.printing-active > * {
+                display: none !important;
+            }
+
+            /* Explicitly Show Path to Printable Content and Style Containers */
+            body.printing-active #appointment {
+                display: block !important;
+                visibility: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                width: 100% !important;
+            }
+
+            body.printing-active #appointment #printable-bookings {
+                display: block !important;
+                visibility: visible !important;
+                margin: 20px auto !important; /* Centering */
+                padding: 0 !important;
+                background: white !important;
+            }
+            
+            /* Hide Specific Non-Printable Elements within #appointment when printing-active */
+            /* Specific rule to hide the booking form by its ID */
+            body.printing-active #booking-form {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            /* Add this rule to hide the on-screen bookings list container */
+            body.printing-active #bookings-list {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            body.printing-active #appointment .mt-6, /* div holding view/print buttons - REMOVED > */
+            body.printing-active #appointment > h2, /* The "Book an Appointment" title */
+            body.printing-active #appointment > p  /* The paragraph under the title */
+            /* Rule for body.printing-active #appointment > #bookings-list is now covered by body.printing-active #bookings-list directly */
+            {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+
+            /* Styles for the actual printable content (table, h3) */
+            /* Remove/comment out old #printable-bookings h3 rule if it was generic */
+            /* #printable-bookings h3 {
+                text-align: center;
+                margin-bottom: 20px; 
+                font-size: 1.6em; 
+                color: #333; 
+            } */
+
+            #printable-bookings #print-hospital-name {
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.8em; /* Matching inline style, can be adjusted */
+                margin-bottom: 5px; /* Matching inline style */
+                color: #000;       /* Matching inline style */
+            }
+
+            #printable-bookings #print-schedule-title {
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.4em; /* Matching inline style, can be adjusted */
+                margin-bottom: 20px; /* Matching inline style */
+                color: #333;       /* Matching inline style */
+            }
+
+            #printable-bookings table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for the table */
+            }
+
+            #printable-bookings th,
+            #printable-bookings td {
+                border: 1px solid #a0c4e4; /* A softer, blue-ish border */
+                padding: 10px 12px; /* Increased padding */
+                text-align: left;
+                font-size: 0.95em; /* Adjust font size if needed */
+            }
+
+            #printable-bookings th {
+                background-color: #4A90E2; /* Primary blue background for headers */
+                color: white; /* White text for headers */
+                font-weight: bold;
+                font-size: 1em; /* Ensure header font size is distinct */
+            }
+
+            #printable-bookings tbody tr:nth-child(even) {
+                background-color: #eaf2f8; /* Light blue alternating row color */
+            }
+            
+            /* #printable-bookings tbody tr:hover { */ /* Optional: hover effect for screen media, but won't apply to print */
+                /* background-color: #d1e0ec; */
+            /* } */
+
+
+            /* Original general print hide rules (can be kept as fallback or removed if new system is robust) */
+            /* These might become redundant if the printing-active logic is comprehensive */
+            header, footer, nav, #services, #contact, #portal-teaser {
+                 display: none; 
+            }
+            /* The following hide rules for elements within #appointment are now handled by 
+               body.printing-active #appointment > form, etc. when printing-active is on.
+               If printing-active is NOT on, these would still apply if window.print() was called directly.
+               So, keeping them might be a safe fallback for non-JS printing or other scenarios.
+            */
+            /* #appointment form, #appointment .mt-6 { display: none; } */
+
+
+            /* Global Print Body Style */
+            body { 
+                margin: 0;
+                padding: 0;
+                background: white !important;
+            }
+        }
+        /* Scroll behavior for header */
+        .header-hidden {
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .header-visible {
+            transform: translateY(0);
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header id="main-header" class="bg-white shadow-md sticky top-0 z-50 header-visible">
+        <nav class="container mx-auto px-4 lg:px-2 py-4 flex flex-col space-y-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-blue-600">
+                    <i class="fas fa-hospital-user mr-2"></i>City General Hospital
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+            <ul class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 items-center">
+                <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-300 font-medium">Home</a></li>
+                <li><a href="#services" class="text-gray-700 hover:text-blue-600 transition duration-300 font-medium">Services</a></li>
+                <li><a href="#appointment" class="text-gray-700 hover:text-blue-600 transition duration-300 font-medium">Appointments</a></li>
+                <li><a href="#contact" class="text-gray-700 hover:text-blue-600 transition duration-300 font-medium">Contact Us</a></li>
+                <li><a href="#portal" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 shadow-sm">Patient Portal</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg">
+            <a href="#" class="block px-6 py-3 text-gray-700 hover:bg-blue-50 transition duration-300">Home</a>
+            <a href="#services" class="block px-6 py-3 text-gray-700 hover:bg-blue-50 transition duration-300">Services</a>
+            <a href="#appointment" class="block px-6 py-3 text-gray-700 hover:bg-blue-50 transition duration-300">Appointments</a>
+            <a href="#contact" class="block px-6 py-3 text-gray-700 hover:bg-blue-50 transition duration-300">Contact Us</a>
+            <a href="#portal" class="block px-6 py-3 text-blue-600 hover:bg-blue-50 font-semibold transition duration-300">Patient Portal</a>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 md:py-32 w-full">
+        <div class="container mx-auto px-4 lg:px-2 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in-up">Your Health, Our Priority</h1>
+            <p class="text-lg md:text-xl mb-10 fade-in-up" style="animation-delay: 0.2s;">
+                Providing compassionate and comprehensive healthcare services to our community.
+            </p>
+            <a href="#appointment"
+               class="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-100 transition duration-300 shadow-lg transform hover:scale-105 fade-in-up"
+               style="animation-delay: 0.4s;">
+                Book an Appointment
+            </a>
+        </div>
+    </section>
+
+    <section id="services" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 lg:px-2">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">Our Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">General Medicine</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Comprehensive primary care for all ages, focusing on prevention and treatment of common illnesses.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">Cardiology</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Specialized heart care, including diagnostics, treatment, and management of cardiovascular diseases.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">Pediatrics</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Dedicated healthcare for infants, children, and adolescents, ensuring their healthy growth and development.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-x-ray"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">Radiology</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Advanced imaging services including X-rays, CT scans, and MRIs for accurate diagnosis.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">Specialty Clinics</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Access to various specialists including dermatology, neurology, and orthopedics.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4 text-4xl">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-3">Emergency Care</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        24/7 emergency services for urgent medical needs, equipped with state-of-the-art facilities.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <a href="#services-page" class="text-blue-600 hover:text-blue-800 font-semibold text-lg group">
+                    View All Services <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="appointment" class="py-16 md:py-24 bg-gray-100">
+        <div class="container mx-auto px-4 lg:px-2 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Book an Appointment</h2>
+            <p class="text-gray-700 mb-8 max-w-2xl mx-auto">
+                Easily schedule your visit with our specialists. Our team is ready to assist you with your healthcare needs.
+            </p>
+            <form id="booking-form" class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div class="mb-4">
+                    <label for="patient-name" class="block text-gray-700 font-medium mb-2">Patient Name</label>
+                    <input type="text" id="patient-name" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="doctor" class="block text-gray-700 font-medium mb-2">Select Doctor</label>
+                    <select id="doctor" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Choose a Doctor</option>
+                        <option value="Dr. Ahmed Khan">Dr. Ahmed Khan (Cardiology)</option>
+                        <option value="Dr. Fatima Ali">Dr. Fatima Ali (Pediatrics)</option>
+                        <option value="Dr. Muhammad Usman">Dr. Muhammad Usman (General Medicine)</option>
+                        <option value="Dr. Ayesha Siddiqui">Dr. Ayesha Siddiqui (Radiology)</option>
+                        <option value="Dr. Bilal Ahmed">Dr. Bilal Ahmed (Neurology)</option>
+                        <option value="Dr. Zainab Malik">Dr. Zainab Malik (Dermatology)</option>
+                        <option value="Dr. Omar Farooq">Dr. Omar Farooq (Orthopedics)</option>
+                        <option value="Dr. Sara Rehman">Dr. Sara Rehman (Emergency Care)</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="appointment-date" class="block text-gray-700 font-medium mb-2">Date</label>
+                    <input type="date" id="appointment-date" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="2025-05-14">
+                </div>
+                <div class="mb-4">
+                    <label for="appointment-time" class="block text-gray-700 font-medium mb-2">Time</label>
+                    <select id="appointment-time" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Choose a Time</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-md hover:shadow-lg w-full">
+                    Schedule Now
+                </button>
+            </form>
+            <div class="mt-6">
+                <button id="view-bookings" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                    View Bookings
+                </button>
+                <button id="print-bookings" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ml-4">
+                    Print Bookings
+                </button>
+            </div>
+            <div id="bookings-list" class="mt-6 hidden max-w-lg mx-auto bg-gray-50 p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Scheduled Appointments</h3>
+                <button id="clear-bookings-button" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg text-sm mt-2 mb-2">Clear All Bookings</button>
+                <ul id="bookings" class="text-gray-600"></ul>
+            </div>
+            <div id="printable-bookings" class="hidden">
+                <h2 id="print-hospital-name" style="text-align: center; font-weight: bold; font-size: 1.8em; margin-bottom: 5px; color: #000;">City General Hospital</h2>
+                <h3 id="print-schedule-title" style="text-align: center; font-weight: bold; font-size: 1.4em; margin-bottom: 20px; color: #333;">Appointment Schedule</h3>
+                <ul id="print-bookings-list"></ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 lg:px-2 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Get In Touch</h2>
+            <p class="text-gray-700 mb-8 max-w-2xl mx-auto">
+                Have questions or need assistance? Contact our support team. We are here to help you.
+            </p>
+            <div class="max-w-lg mx-auto bg-gray-50 p-8 rounded-xl shadow-lg">
+                <p class="text-lg font-medium text-gray-700"><i class="fas fa-phone-alt mr-2 text-blue-500"></i> Call Us: (123) 456-7890</p>
+                <p class="text-lg font-medium text-gray-700 mt-3"><i class="fas fa-envelope mr-2 text-blue-500"></i> Email: info@citygeneral.com</p>
+                <p class="text-lg font-medium text-gray-700 mt-3"><i class="fas fa-map-marker-alt mr-2 text-blue-500"></i> Address: 123 Health St, Wellness City, CA 90210</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="portal" class="py-16 md:py-24 bg-blue-50">
+        <div class="container mx-auto px-4 lg:px-2 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-blue-700 mb-6">Patient Portal</h2>
+            <p class="text-gray-700 mb-8 max-w-2xl mx-auto">
+                Manage your medical records, view appointment history, and communicate securely with your doctor.
+            </p>
+            <form id="patient-form" class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div class="mb-4">
+                    <label for="full-name" class="block text-gray-700 font-medium mb-2">Full Name</label>
+                    <input type="text" id="full-name" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="email" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="phone" class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                    <input type="tel" id="phone" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="medical-history" class="block text-gray-700 font-medium mb-2">Medical History (Optional)</label>
+                    <textarea id="medical-history" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-md hover:shadow-lg w-full">
+                    Submit Details
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-4 lg:px-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h4 class="text-xl font-semibold text-white mb-4">City General Hospital</h4>
+                    <p class="text-gray-400 leading-relaxed">
+                        Dedicated to providing exceptional healthcare with a personal touch. Our mission is to improve the health and well-being of our community.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Home</a></li>
+                        <li><a href="#services" class="hover:text-blue-400 transition duration-300">Our Services</a></li>
+                        <li><a href="#appointment" class="hover:text-blue-400 transition duration-300">Book Appointment</a></li>
+                        <li><a href="#contact" class="hover:text-blue-400 transition duration-300">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Patient Rights</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition duration-300">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold text-white mb-4">Connect With Us</h4>
+                    <p class="mb-2"><i class="fas fa-map-marker-alt mr-2 text-blue-400"></i> 123 Health St, Wellness City</p>
+                    <p class="mb-2"><i class="fas fa-phone-alt mr-2 text-blue-400"></i> (123) 456-7890</p>
+                    <p class="mb-4"><i class="fas fa-envelope mr-2 text-blue-400"></i> support@citygeneral.com</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300 text-2xl"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300 text-2xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300 text-2xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300 text-2xl"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-gray-700 my-8">
+            <div class="text-center text-gray-500">
+                <p>© <span id="currentYear"></span> City General Hospital. All Rights Reserved.</p>
+                <p class="text-sm mt-1">Designed with care for our community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+
+        function displayBookings() {
+            const bookingsListDiv = document.getElementById('bookings-list'); 
+            const printBookingsListUl = document.getElementById('print-bookings-list'); 
+
+            if (!bookingsListDiv || !printBookingsListUl) {
+                console.error("Required booking display elements not found.");
+                return;
+            }
+
+            // Clear previous on-screen table or UL content (except H3)
+            const existingScreenTable = bookingsListDiv.querySelector('table');
+            if (existingScreenTable) {
+                existingScreenTable.remove();
+            }
+            const existingScreenUl = bookingsListDiv.querySelector('ul#bookings');
+            if (existingScreenUl) {
+                existingScreenUl.innerHTML = ''; // Clear it
+                existingScreenUl.style.display = 'none'; // Hide it as table will be used
+            }
+            const existingNoBookingsMessage = bookingsListDiv.querySelector('p.no-bookings-message');
+            if (existingNoBookingsMessage) {
+                existingNoBookingsMessage.remove();
+            }
+            
+            printBookingsListUl.innerHTML = ''; // Clear previous printable content
+
+            const headers = ['Patient Name', 'Doctor', 'Date', 'Time'];
+
+            if (bookings.length === 0) {
+                const noBookingsMessage = document.createElement('p');
+                noBookingsMessage.classList.add('no-bookings-message');
+                noBookingsMessage.textContent = 'No appointments scheduled.';
+                
+                const h3Title = bookingsListDiv.querySelector('h3');
+                if (h3Title) {
+                    h3Title.parentNode.insertBefore(noBookingsMessage, h3Title.nextSibling);
+                } else {
+                    bookingsListDiv.appendChild(noBookingsMessage);
+                }
+                printBookingsListUl.innerHTML = '<p>No appointments scheduled.</p>';
+            } else {
+                // --- Create and populate table for ON-SCREEN view ---
+                const screenTable = document.createElement('table');
+                screenTable.classList.add('w-full', 'text-left', 'border-collapse', 'mt-2'); // Add Tailwind classes for basic styling
+                const screenThead = document.createElement('thead');
+                const screenHeaderRow = document.createElement('tr');
+                screenHeaderRow.classList.add('bg-gray-200');
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    th.classList.add('p-2', 'border', 'border-gray-300');
+                    screenHeaderRow.appendChild(th);
+                });
+                screenThead.appendChild(screenHeaderRow);
+                screenTable.appendChild(screenThead);
+
+                const screenTbody = document.createElement('tbody');
+                bookings.forEach(booking => {
+                    const row = document.createElement('tr');
+                    row.classList.add('border-b');
+                    const bookingData = [booking.patientName, booking.doctor, booking.date, booking.time];
+                    bookingData.forEach(data => {
+                        const td = document.createElement('td');
+                        td.textContent = data;
+                        td.classList.add('p-2', 'border', 'border-gray-300');
+                        row.appendChild(td);
+                    });
+                    screenTbody.appendChild(row);
+                });
+                screenTable.appendChild(screenTbody);
+                
+                const h3Title = bookingsListDiv.querySelector('h3');
+                if (h3Title) {
+                    h3Title.parentNode.insertBefore(screenTable, h3Title.nextSibling);
+                } else {
+                    bookingsListDiv.appendChild(screenTable);
+                }
+
+                // --- Create and populate table for PRINT view ---
+                const printTable = document.createElement('table');
+                const printThead = document.createElement('thead');
+                const printHeaderRow = document.createElement('tr');
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    printHeaderRow.appendChild(th);
+                });
+                printThead.appendChild(printHeaderRow);
+                printTable.appendChild(printThead);
+
+                const printTbody = document.createElement('tbody');
+                bookings.forEach(booking => {
+                    const row = document.createElement('tr');
+                    const bookingData = [booking.patientName, booking.doctor, booking.date, booking.time];
+                    bookingData.forEach(data => {
+                        const td = document.createElement('td');
+                        td.textContent = data;
+                        row.appendChild(td);
+                    });
+                    printTbody.appendChild(row);
+                });
+                printTable.appendChild(printTbody);
+                printBookingsListUl.appendChild(printTable);
+            }
+        }
+
+        function reinitializePageEventListeners() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Set current year in footer
+            const currentYearSpan = document.getElementById('currentYear');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    // Ensure targetElement is part of the current document before scrolling
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Handle patient form submission
+            const patientForm = document.getElementById('patient-form');
+            if (patientForm) {
+                patientForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const patientData = {
+                        fullName: document.getElementById('full-name').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        medicalHistory: document.getElementById('medical-history').value
+                    };
+                    localStorage.setItem('patientData', JSON.stringify(patientData));
+                    alert('Patient details saved successfully!');
+                    patientForm.reset();
+                });
+            }
+
+            // Handle appointment booking
+            const bookingForm = document.getElementById('booking-form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const booking = {
+                        patientName: document.getElementById('patient-name').value,
+                        doctor: document.getElementById('doctor').value,
+                        date: document.getElementById('appointment-date').value,
+                        time: document.getElementById('appointment-time').value
+                    };
+                    bookings.push(booking);
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+                    alert('Appointment booked successfully!');
+                    bookingForm.reset();
+                    displayBookings(); 
+                });
+            }
+
+            const viewBookingsButton = document.getElementById('view-bookings');
+            const bookingsContainer = document.getElementById('bookings-list');
+            if (viewBookingsButton && bookingsContainer) {
+                viewBookingsButton.addEventListener('click', () => {
+                    bookingsContainer.classList.toggle('hidden');
+                    displayBookings();
+                });
+            }
+
+            const printBookingsButton = document.getElementById('print-bookings');
+            if (printBookingsButton) {
+                printBookingsButton.addEventListener('click', () => {
+                    displayBookings(); // Ensure the printable list is up-to-date
+
+                    document.body.classList.add('printing-active');
+
+                    const afterPrintHandler = () => {
+                        document.body.classList.remove('printing-active');
+                        window.removeEventListener('afterprint', afterPrintHandler);
+                        
+                        // It's generally a good idea to re-initialize or at least re-validate UI state
+                        // if anything could have been affected by print styles or browser print quirks.
+                        // For instance, if some elements relied on JavaScript for sizing or visibility
+                        // that print styles might have temporarily overridden.
+                        // In this case, since we are not drastically changing DOM like with innerHTML,
+                        // a full reinitializePageEventListeners() might be overkill, but
+                        // calling displayBookings() again can ensure the on-screen view is correct.
+                        displayBookings(); // Refresh the view just in case
+                    };
+                    window.addEventListener('afterprint', afterPrintHandler);
+
+                    window.print();
+                    
+                    // Fallback: If 'afterprint' doesn't fire for some reason (e.g. user cancels print quickly in some browsers)
+                    // or if the print dialog is exceptionally quick, the class might remain.
+                    // A small timeout can help, but 'afterprint' is the preferred method.
+                    // Consider if this is strictly necessary or if relying on afterprint is sufficient.
+                    // For now, we'll rely on afterprint. If issues arise where the class isn't removed,
+                    // a setTimeout fallback could be added here.
+                    // Example:
+                    // setTimeout(() => {
+                    //    if (document.body.classList.contains('printing-active')) {
+                    //        document.body.classList.remove('printing-active');
+                    //        displayBookings(); // Refresh
+                    //    }
+                    // }, 1000); // Adjust timeout as needed
+                });
+            }
+
+            // Header scroll behavior
+            // Ensure header exists before adding scroll listener
+            
+            // Listener for Clear All Bookings button
+            const clearBookingsButton = document.getElementById('clear-bookings-button');
+            if (clearBookingsButton) {
+                clearBookingsButton.addEventListener('click', () => {
+                    if (confirm("Are you sure you want to clear all bookings? This cannot be undone.")) {
+                        bookings = []; // Ensure 'bookings' is the globally scoped array
+                        localStorage.setItem('bookings', JSON.stringify(bookings));
+                        displayBookings(); // Refresh the display
+                    }
+                });
+            }
+
+            const header = document.getElementById('main-header');
+            if (header) {
+                let lastScroll = 0; 
+                window.addEventListener('scroll', () => {
+                    // Check if header is still in the DOM (it might not be if body was replaced by printable content temporarily)
+                    const currentHeader = document.getElementById('main-header');
+                    if (!currentHeader) return;
+
+                    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+                    if (currentScroll > lastScroll && currentScroll > 100) {
+                        currentHeader.classList.remove('header-visible');
+                        currentHeader.classList.add('header-hidden');
+                    } else {
+                        currentHeader.classList.remove('header-hidden');
+                        currentHeader.classList.add('header-visible');
+                    }
+                    lastScroll = currentScroll <= 0 ? 0 : currentScroll;
+                });
+            }
+            
+            // Initial call to display bookings if relevant elements are present
+            // This ensures that if the page is reinitialized, the booking list is shown correctly.
+            if (document.getElementById('bookings') && document.getElementById('print-bookings-list')) {
+                 displayBookings();
+            }
+        }
+
+        // Initial setup of all event listeners and page functionalities
+        reinitializePageEventListeners();
+
+    </script>
+
+</body>
+</html>
